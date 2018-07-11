@@ -1,0 +1,32 @@
+---
+title: "analiseSeries"
+author: "Eddie Kaleb"
+date: "11 de julho de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+series_imdb <- read_csv("../../database/series_from_imdb.csv")
+
+series_imdb %>% glimpse()
+
+unique(series_imdb$series_name)
+
+series_imdb %>% 
+  filter(series_name %in% "Breaking Bad") %>% 
+  group_by(season) %>% 
+  summarise(season_mean = mean(UserRating)) %>% 
+  filter(season_mean >= max(season_mean))
+
+```
+
+Qual temporada de Breaking Bad foi melhor avaliada?
+
+
+As avalições (Breaking Bad) melhoraram ao decorrer das temporadas ou não?
