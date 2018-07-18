@@ -1,32 +1,62 @@
 ---
-title: "analiseSeries"
+title: "Análise de Breaking Bad"
 author: "Eddie Kaleb"
 date: "11 de julho de 2018"
-output: html_document
+output: 
+  html_document:
+        toc: true
+        toc_float: true
+        toc_depth: 4
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
 ```{r}
 library(tidyverse)
 
 series_imdb <- read_csv("../../database/series_from_imdb.csv")
+```
 
-series_imdb %>% glimpse()
+A série escolhida para análise foi Breaking Bad (2008-2013). Para isso, foi utilizado os dados do IMDB.
+Inicialmente, formulei duas perguntas a serem respondidas. 
 
-unique(series_imdb$series_name)
+#### 1. Qual temporada de Breaking Bad foi melhor avaliada
 
-series_imdb %>% 
+Minha primeira impressão foi que a 5ª temporada teria a melhor média baseado na minha opinião sobre a série. 
+Para isso extrai todos os dados dos episódios de todas as temporadas e calculei as médias.
+
+```{r}
+series_imdb %>%
   filter(series_name %in% "Breaking Bad") %>% 
   group_by(season) %>% 
   summarise(season_mean = mean(UserRating)) %>% 
-  filter(season_mean >= max(season_mean))
+  ggplot(aes(x=as.character(season), y=season_mean)) + geom_bar(stat="identity", aes(fill=season), fill="blue", show.legend=FALSE) +
+  ggtitle("\t \t \t \t Média das temporadas de Breaking Bad") + xlab("Temporadas") + ylab("Avaliações")
+```
+
+Realmente a 5ª temporada foi a melhor avaliada, entretanto, percebe-se uma regularidade nas médias, 
+o que não necessariamente quer dizer que todas as séries foram consideradas boas pelo público por
+não ter nenhuma informação que mostre a evolução das notas de forma precisa.
+
+#### 2. As avalições (Breaking Bad) melhoraram ao decorrer das temporadas ou não?
+
+Minha primeira impressão foi que ao decorrer das temporadas as avaliações fossem melhorar. 
+Para isso, utilizei a mediana como medida para o gráfico de linhas, com isso, queria confrontar
+com a média utilizada na pergunta anterior, visualizando assim a evolução das avaliações de forma geral.
+
+```{r}
+series_imdb %>% 
+  filter(series_name %in% "Breaking Bad") %>% 
+  group_by(season) %>% 
+  summarise(season_median= median(UserRating))  %>% 
+  ggplot(aes(x=season, y=season_median)) + geom_line() +
+  ggtitle("\t \t \t \t Evolução das avaliações por temporada")
 
 ```
 
-Qual temporada de Breaking Bad foi melhor avaliada?
-
-
-As avalições (Breaking Bad) melhoraram ao decorrer das temporadas ou não?
+A evolução das avaliações é perceptível, ocorrendo um grande salto nas avaliações entre a 4ª e 5ª temporada.
+É bastante justificável o resultado devido serem as duas últimas temporadas da série. Aliando esse resultado
+com o da pergunta anterior é possível afirmar com mais exatidão que a 5ª temporada foi a melhor de todas.
